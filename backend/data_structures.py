@@ -11,11 +11,15 @@ class CrewMember:
         self.emp_id = data['emp_id']
         self.name = data['name']
         self.designation = data['designation']
-        self.base_location = data['baseLocation']
+        
+        # Handle both 'baseLocation' (camelCase) and 'baselocation' (lowercase)
+        self.base_location = data.get('baseLocation') or data.get('baselocation', 'UNKNOWN')
+        
         self.data = data
     
     def __repr__(self):
         return f"Crew({self.emp_id}, {self.name})"
+
 
 class MinHeapCrewScheduler:
     """
@@ -41,6 +45,7 @@ class MinHeapCrewScheduler:
     def size(self):
         return len(self.heap)
 
+
 class CertificationHashMap:
     """
     Hash Map for O(1) crew filtering by certification
@@ -60,6 +65,7 @@ class CertificationHashMap:
         result = self.cert_map.get(cert_type, [])
         print(f"   [HASH MAP LOOKUP] '{cert_type}' → Found {len(result)} crew members")
         return result
+
 
 class LocationGraph:
     """
@@ -101,6 +107,7 @@ class LocationGraph:
         dfs(disrupted_location)
         print(f"   [GRAPH DFS RESULT] {len(affected)} locations affected: {affected}")
         return affected
+
 
 class BSTRankingTree:
     """
@@ -150,6 +157,7 @@ class BSTRankingTree:
         if len(result) < k:
             result.append((node.crew, node.score))
         self._inorder_reverse(node.left, result, k)
+
 
 class BackupCrewQueue:
     """
