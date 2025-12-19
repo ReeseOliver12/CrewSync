@@ -28,7 +28,7 @@ export default function Navbar() {
               }`
             }
           >
-            📊 Dashboard
+             Dashboard
           </NavLink>
           <NavLink
             to="/crew"
@@ -40,7 +40,7 @@ export default function Navbar() {
               }`
             }
           >
-            👥 Crew Management
+             Crew Management
           </NavLink>
           <NavLink
             to="/recommendations"
@@ -52,7 +52,7 @@ export default function Navbar() {
               }`
             }
           >
-            ⭐ Recommendations
+             Recommendations
           </NavLink>
         </div>
       </div>

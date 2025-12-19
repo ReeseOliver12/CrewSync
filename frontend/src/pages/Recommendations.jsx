@@ -67,7 +67,7 @@ export default function Recommendations() {
     <div className="max-w-7xl mx-auto px-6 py-8">
       <div className="bg-white rounded-xl shadow-md p-6 mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          ⭐ 17-Parameter Crew Recommendations
+           17-Parameter Crew Recommendations
         </h2>
         <div className="flex items-center gap-4">
           <label className="font-semibold text-gray-700">Select Flight:</label>
