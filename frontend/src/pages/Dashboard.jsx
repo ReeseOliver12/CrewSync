@@ -10,6 +10,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState('default'); // ✅ NEW
 
   useEffect(() => {
     loadData();
@@ -37,6 +38,29 @@ export default function Dashboard() {
       </div>
     );
   }
+
+  // ✅ SORT LOGIC
+  const getSortedFlights = () => {
+    const flightsCopy = [...flights];
+    
+    if (sortBy === 'priority-high') {
+      return flightsCopy.sort((a, b) => {
+        const priorityOrder = { 'High': 1, 'Medium': 2, 'Low': 3 };
+        return priorityOrder[a.priority] - priorityOrder[b.priority];
+      });
+    }
+    
+    if (sortBy === 'priority-low') {
+      return flightsCopy.sort((a, b) => {
+        const priorityOrder = { 'Low': 1, 'Medium': 2, 'High': 3 };
+        return priorityOrder[a.priority] - priorityOrder[b.priority];
+      });
+    }
+    
+    return flightsCopy;
+  };
+
+  const sortedFlights = getSortedFlights();
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
@@ -75,10 +99,27 @@ export default function Dashboard() {
       {/* Flight Schedule */}
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
         <div className="px-6 py-4 bg-gray-50 border-b">
-          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-            ✈️ Flight Schedule
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              ✈️ Flight Schedule
+            </h2>
+            
+            {/* ✅ SORTING DROPDOWN */}
+            <div className="flex items-center gap-3">
+              <label className="text-sm font-medium text-gray-700">Sort by:</label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm font-medium"
+              >
+                <option value="default">Default Order</option>
+                <option value="priority-high">High Priority First</option>
+                <option value="priority-low">Low Priority First</option>
+              </select>
+            </div>
+          </div>
         </div>
+        
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
@@ -93,7 +134,7 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {flights.map((flight) => (
+              {sortedFlights.map((flight) => (
                 <FlightCard
                   key={flight.flightNumber}
                   flight={flight}
