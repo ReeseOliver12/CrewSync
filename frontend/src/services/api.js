@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE = 'https://crewsync-api-62cn.onrender.com/api';
+const API_BASE = 'http://localhost:5000/api';
 
 export const api = {
   // Dashboard
@@ -16,6 +16,12 @@ export const api = {
   
   // Recommendations
   getRecommendations: (flightNumber) => axios.get(`${API_BASE}/recommendations/${flightNumber}`),
+  
+  // Assignment - NEW
+  assignCrewToFlight: (empId, flightNumber) => 
+    axios.post(`${API_BASE}/crew/${empId}/assign`, { 
+      flight_number: flightNumber 
+    }),
   
   // Health
   healthCheck: () => axios.get(`${API_BASE}/health`),

@@ -10,6 +10,8 @@ export default function Recommendations() {
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [assignModal, setAssignModal] = useState(null);
+  const [assigning, setAssigning] = useState(false);
+  const [assignSuccess, setAssignSuccess] = useState(null);
 
   useEffect(() => {
     loadFlights();
@@ -56,9 +58,42 @@ export default function Recommendations() {
     setAssignModal(rec);
   };
 
-  const confirmAssign = () => {
-    alert(`Assigned ${assignModal.name} to flight ${selectedFlight}`);
-    setAssignModal(null);
+  const confirmAssign = async () => {
+    if (!assignModal) return;
+    
+    setAssigning(true);
+    
+    try {
+      // Call backend API to assign crew
+      const response = await api.assignCrewToFlight(assignModal.emp_id, selectedFlight);
+      
+      console.log('Assignment successful:', response.data);
+      
+      // Show success message
+      setAssignSuccess({
+        crewName: assignModal.name,
+        flightNumber: selectedFlight
+      });
+      
+      // Close modal
+      setAssignModal(null);
+      
+      // Reload recommendations to remove assigned crew from available pool
+      setTimeout(() => {
+        loadRecommendations(selectedFlight);
+        setAssignSuccess(null);
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Assignment failed:', error);
+      
+      // Show error message
+      const errorMsg = error.response?.data?.error || 'Failed to assign crew';
+      alert(`Error: ${errorMsg}`);
+      
+    } finally {
+      setAssigning(false);
+    }
   };
 
   const selectedFlightData = flights.find(f => f.flightNumber === selectedFlight);
@@ -67,7 +102,7 @@ export default function Recommendations() {
     <div className="max-w-7xl mx-auto px-6 py-8">
       <div className="bg-white rounded-xl shadow-md p-6 mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-           17-Parameter Crew Recommendations
+          ⭐ 17-Parameter Crew Recommendations
         </h2>
         <div className="flex items-center gap-4">
           <label className="font-semibold text-gray-700">Select Flight:</label>
@@ -103,7 +138,7 @@ export default function Recommendations() {
       {!loading && recommendations.length === 0 && selectedFlight && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
           <p className="text-yellow-800 text-lg">⚠️ No recommendations available for this flight.</p>
-          <p className="text-yellow-600 text-sm mt-2">Check if crew data has 'availability': 'Available'</p>
+          <p className="text-yellow-600 text-sm mt-2">All qualified crew may already be assigned.</p>
         </div>
       )}
 
@@ -117,6 +152,19 @@ export default function Recommendations() {
               onAssign={handleAssign}
             />
           ))}
+        </div>
+      )}
+
+      {/* Success Notification */}
+      {assignSuccess && (
+        <div className="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 animate-slide-in">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          <div>
+            <p className="font-bold">Assignment Successful!</p>
+            <p className="text-sm">{assignSuccess.crewName} assigned to {assignSuccess.flightNumber}</p>
+          </div>
         </div>
       )}
 
@@ -167,15 +215,28 @@ export default function Recommendations() {
             <div className="flex gap-3">
               <button
                 onClick={() => setAssignModal(null)}
+                disabled={assigning}
                 className="flex-1 px-4 py-3 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmAssign}
-                className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                disabled={assigning}
+                className={`flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2 ${
+                  assigning ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
-                ✓ Confirm Assignment
+                {assigning ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    Assigning...
+                  </>
+                ) : (
+                  <>
+                    ✓ Confirm Assignment
+                  </>
+                )}
               </button>
             </div>
           </div>

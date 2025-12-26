@@ -1,6 +1,8 @@
 export default function CrewTable({ crew }) {
   const statusColors = {
     'Available': 'bg-green-500',
+    'Assigned': 'bg-blue-500',
+    'On Duty': 'bg-blue-600',
     'Fatigued': 'bg-red-500',
     'On Leave': 'bg-gray-500',
   };
@@ -71,9 +73,12 @@ export default function CrewTable({ crew }) {
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium text-white ${statusColors[member.availability]}`}>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium text-white ${statusColors[member.availability] || 'bg-gray-500'}`}>
                     {member.availability}
                   </span>
+                  {member.assignedFlight && (
+                    <p className="text-xs text-gray-500 mt-1">Flight: {member.assignedFlight}</p>
+                  )}
                 </td>
                 <td className="px-6 py-4">
                   <button className="text-blue-600 hover:text-blue-800 font-medium">

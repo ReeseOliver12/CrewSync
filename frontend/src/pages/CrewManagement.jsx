@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import CrewTable from '../components/CrewTable';
 import api from '../services/api';
 
 export default function CrewManagement() {
   const [crew, setCrew] = useState([]);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   useEffect(() => {
     loadCrew();
-  }, []);
+  }, [location]); // Refetch when navigating to this page
 
   const loadCrew = async () => {
+    setLoading(true);
     try {
       const response = await api.getAllCrew();
       setCrew(response.data);
