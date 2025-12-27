@@ -1,3 +1,4 @@
+//availibility undo feature remaining
 export default function CrewTable({ crew }) {
   const statusColors = {
     'Available': 'bg-green-500',
